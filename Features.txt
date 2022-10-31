@@ -1,0 +1,5 @@
+Thêm tính năng : 
+	+ Tạo thêm khung chat
+	+ Tạo setting khi mở app với defaut port
+	+ Hiển thị ip bên client
+	+ (Chuyển ip bên Client thành mã code) (bên server nhận code =>ip để điều khiển)

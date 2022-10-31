@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="RemoteClient">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/RemoteClient/dist/RemoteClient.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="RemoteClient/src"/>
+	<classpathentry kind="src" path="RemoteServer/out/production/RemoteServer/src"/>
+	<classpathentry kind="src" path="RemoteServer/src"/>
+	<classpathentry kind="lib" path="RemoteClient/dist/RemoteClient.jar"/>
+	<classpathentry kind="lib" path="RemoteServer/dist/RemoteServer.jar"/>
+	<classpathentry kind="lib" path="RemoteServer/out/production/RemoteServer/dist/RemoteServer.jar"/>
+	<classpathentry kind="output" path="RemoteClient/build/classes"/>
+</classpath>

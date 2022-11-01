@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/RemoteDesktop.iml" filepath="$PROJECT_DIR$/.idea/RemoteDesktop.iml" />
       <module fileurl="file://$PROJECT_DIR$/RemoteServer/RemoteServer.iml" filepath="$PROJECT_DIR$/RemoteServer/RemoteServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/UIRemoteDesktop/UIRemoteDesktop.iml" filepath="$PROJECT_DIR$/UIRemoteDesktop/UIRemoteDesktop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/image/image.iml" filepath="$PROJECT_DIR$/image/image.iml" />
     </modules>
   </component>
 </project>

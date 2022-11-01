@@ -6,6 +6,7 @@
 package remoteserver;
 
 import java.awt.BorderLayout;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,25 +23,30 @@ public class ServerInitiator {
     //JDesktopPane represents the main container that will contain all
     //connected clients' screens
     public static JDesktopPane desktop = new JDesktopPane();
-
-//    public static void main(String args[]){
-//        String port = JOptionPane.showInputDialog("Please enter listening port");
-//        initialize(Integer.parseInt(port));
-//    }
-//    public int port;
-    public  ServerInitiator(){
-        String port = JOptionPane.showInputDialog("Please enter listening port");
-        initialize(Integer.parseInt(port));
+    public  ServerInitiator(int port){
+        initialize(port);
     }
 
     public static void initialize(int port){
         try {
             ServerSocket sc = new ServerSocket(port);
-            //Show Server GUI
-            drawGUI();
             //Listen to server port and accept clients connections
 
                 Socket client = sc.accept();
+                DataInputStream dis = new DataInputStream(client.getInputStream());
+                String pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
+                String getPassByClient = dis.readUTF();
+                 do{
+                    if(pass.equalsIgnoreCase("") || !pass.equals(getPassByClient))
+                    {
+                        JFrame f = new  JFrame ();
+                        JOptionPane.showMessageDialog (f, "Error Password ! Please enter again !","Error",JOptionPane.WARNING_MESSAGE);
+                        pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
+                    }
+                    else break;
+                }while (true);
+                //Show Server GUI
+                drawGUI();
                 System.out.println("New client Connected to the server");
                 //Per each client create a ClientHandler
                 new ClientHandler(client,desktop);

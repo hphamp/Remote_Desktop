@@ -61,6 +61,7 @@ public class UiRemote implements ActionListener,ItemListener{
     private String MyIp;
     private String nameDesktop;
     private int Port;
+    private String password;
     public UiRemote() {
         try {
             MyIp = InetAddress.getLocalHost().getHostAddress();
@@ -306,13 +307,12 @@ public class UiRemote implements ActionListener,ItemListener{
         else if(e.getSource() == btnConect){
             if(toggleButton.isSelected()){
                 if (txtIpConect != null) {
-                    frame1.dispose();
-                    new ClientInitiator(txtIpConect.getText(), Port);
+                    password = String.valueOf(txtsetPassword.getPassword());
+                    new ClientInitiator(password,txtIpConect.getText(), Port);
                 }
             }
             else {
-                frame1.dispose();
-                new ServerInitiator();
+                new ServerInitiator(Port);
             }
         }
         else if (e.getSource() == btnSave) {

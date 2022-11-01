@@ -16,6 +16,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -38,21 +39,29 @@ public class ClientInitiator {
 //        new ClientInitiator().initialize(ip, Integer.parseInt(port));
 //    }
 
-    public ClientInitiator(String ip,int port) {
+    public ClientInitiator(String password,String ip,int port) {
 //        String ip = JOptionPane.showInputDialog("Please enter server IP");
 //        String port = JOptionPane.showInputDialog("Please enter server port");
-        initialize(ip,port);
+        initialize(password,ip,port);
     }
 
-    public void initialize(String ip, int port ){
+    public void initialize(String password,String ip, int port ){
 
         Robot robot = null; //Used to capture the screen
         Rectangle rectangle = null; //Used to represent screen dimensions
+
+        DataOutputStream dos;
 
         try {
             System.out.println("Connecting to server ..........");
             socket = new Socket(ip, port);
             System.out.println("Connection Established.");
+
+            //send password
+            dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(password);
+
+
 
             //Get default screen device
             GraphicsEnvironment gEnv=GraphicsEnvironment.getLocalGraphicsEnvironment();

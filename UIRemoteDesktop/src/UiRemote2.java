@@ -82,7 +82,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
     private void initialize(String MyIp) {
 
         frame1 = new JFrame();
-        frame1.setIconImage(Toolkit.getDefaultToolkit().getImage("..\\image\\MetroUI-Apps-Alt-3-icon.png"));
+        frame1.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
         frame1.getContentPane().setBackground(new Color(255, 255, 255));
         frame1.setBounds(100, 100, 653, 405);
         frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -95,7 +95,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
         panelSetting.setVisible(false);
 
         lbTitle = new JLabel("Control Remote Desktop");
-        lbTitle.setIcon(new ImageIcon("..\\image\\Actions-help-about-icon-16.png"));
+        lbTitle.setIcon(new ImageIcon("image\\Actions-help-about-icon-16.png"));
         lbTitle.setFont(new Font("Tahoma", Font.ITALIC, 17));
         lbTitle.setBounds(50, 20, 280, 26);
         panelSetting.add(lbTitle);
@@ -127,20 +127,20 @@ public class UiRemote2 implements ActionListener,ItemListener{
         panelSetting.add(txtsetPassword);
 
         btnHideShowPass = new JToggleButton();
-        btnHideShowPass.setIcon(new ImageIcon("..\\image\\eye.png"));
+        btnHideShowPass.setIcon(new ImageIcon("image\\eye.png"));
         btnHideShowPass.setSelected(false);
         btnHideShowPass.setBounds(260, 170, 36, 36);
         btnHideShowPass.addItemListener(this);
 
         btnHideShowPass2 = new JToggleButton();
-        btnHideShowPass2.setIcon(new ImageIcon("..\\image\\hidden.png"));
+        btnHideShowPass2.setIcon(new ImageIcon("image\\hidden.png"));
         btnHideShowPass2.setBounds(260, 170, 36, 36);
         btnHideShowPass2.addItemListener(this);
         panelSetting.add(btnHideShowPass2);
 
 
         btnSave = new JButton("SAVE");
-        btnSave.setIcon(new ImageIcon("..\\image\\ok.png"));
+        btnSave.setIcon(new ImageIcon("image\\ok.png"));
         btnSave.setHorizontalAlignment(SwingConstants.LEFT);
         btnSave.setForeground(new Color(46, 139, 87));
         btnSave.setFont(new Font("Tahoma", Font.BOLD, 17));
@@ -178,7 +178,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
         mnNewMenu = new JMenuItem("System");
         mnNewMenu.setForeground(SystemColor.activeCaptionText);
         mnNewMenu.setBackground(SystemColor.scrollbar);
-        mnNewMenu.setIcon(new ImageIcon("..\\image\\Home-icon-16.png"));
+        mnNewMenu.setIcon(new ImageIcon("image\\Home-icon-16.png"));
         mnNewMenu.setFont(new Font("Segoe UI", Font.BOLD, 15));
         mnNewMenu.addActionListener(this);
         menuBar.add(mnNewMenu);
@@ -186,13 +186,13 @@ public class UiRemote2 implements ActionListener,ItemListener{
         mnNewMenu_1 = new JMenuItem("Setting");
         mnNewMenu_1.setForeground(SystemColor.activeCaptionText);
         mnNewMenu_1.setBackground(SystemColor.scrollbar);
-        mnNewMenu_1.setIcon(new ImageIcon("..\\image\\Help-icon-16.png"));
+        mnNewMenu_1.setIcon(new ImageIcon("image\\Help-icon-16.png"));
         mnNewMenu_1.setFont(new Font("Segoe UI", Font.BOLD, 15));
         mnNewMenu_1.addActionListener(this);
         menuBar.add(mnNewMenu_1);
 
         mnNewMenu_2 = new JMenuItem("Chat");
-        mnNewMenu_2.setIcon(new ImageIcon("..\\image\\User-Chat-icon.png"));
+        mnNewMenu_2.setIcon(new ImageIcon("image\\User-Chat-icon.png"));
         mnNewMenu_2.setBackground(SystemColor.scrollbar);
         mnNewMenu_2.setFont(new Font("Segoe UI", Font.BOLD, 15));
         mnNewMenu_2.setForeground(SystemColor.activeCaptionText);
@@ -200,7 +200,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
 
         JLabel lblNewLabel = new JLabel("New label");
         lblNewLabel.setBounds(63, 10, 110, 100);
-        lblNewLabel.setIcon(new ImageIcon("..\\image\\logo.png"));
+        lblNewLabel.setIcon(new ImageIcon("image\\logo.png"));
 
         JLabel lblNewLabel_1 = new JLabel("Remote Desktop");
         lblNewLabel_1.setBounds(183, 10, 292, 54);
@@ -242,12 +242,12 @@ public class UiRemote2 implements ActionListener,ItemListener{
         panelMain.add(txtPass);
 
         btnHideShowPass3 = new JToggleButton();
-        btnHideShowPass3.setIcon(new ImageIcon("..\\image\\eye.png"));
+        btnHideShowPass3.setIcon(new ImageIcon("image\\eye.png"));
         btnHideShowPass3.setBounds(300, 261, 40, 36);
         btnHideShowPass3.addItemListener(this);
 
         btnHideShowPass4 = new JToggleButton();
-        btnHideShowPass4.setIcon(new ImageIcon("..\\image\\hidden.png"));
+        btnHideShowPass4.setIcon(new ImageIcon("image\\hidden.png"));
         btnHideShowPass4.setBounds(300, 261, 40, 36);
         btnHideShowPass4.addItemListener(this);
         panelMain.add(btnHideShowPass4);
@@ -275,7 +275,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
         btnConect.setFont(new Font("Tahoma", Font.BOLD, 17));
         btnConect.setHorizontalAlignment(SwingConstants.LEFT);
         btnConect.addActionListener(this);
-        btnConect.setIcon(new ImageIcon("..\\image\\MetroUI-Apps-Alt-3-icon.png"));
+        btnConect.setIcon(new ImageIcon("image\\MetroUI-Apps-Alt-3-icon.png"));
         btnConect.setBounds(345, 261, 160, 36);
         panelMain.add(btnConect);
 
@@ -306,13 +306,12 @@ public class UiRemote2 implements ActionListener,ItemListener{
         else if(e.getSource() == btnConect){
             if(toggleButton.isSelected()){
                 if (txtIpConect != null) {
-                    frame1.dispose();
-                    new ClientInitiator(txtIpConect.getText(), Port);
+                    String password = String.valueOf(txtsetPassword.getPassword());
+                    new ClientInitiator(password,txtIpConect.getText(), Port);
                 }
             }
             else {
-                frame1.dispose();
-                new ServerInitiator();
+                new ServerInitiator(Port);
             }
         }
         else if (e.getSource() == btnSave) {

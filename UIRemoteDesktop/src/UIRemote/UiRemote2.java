@@ -1,11 +1,13 @@
+package UIRemote;//import remoteserver.ServerInitiator;
+
 import remoteclient.ClientInitiator;
-import remoteserver.ServerInitiator;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.net.InetAddress;
-
 
 
 public class UiRemote2 implements ActionListener,ItemListener{
@@ -24,7 +26,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
 
     //setting
     private JTextField txtPort;
-    private JTextField txtNameDesktop;
+    public JTextField txtNameDesktop;
     private JLabel lbPort;
     //    private JTextField txtSetPass;
     private JLabel lbNameDesktop;
@@ -38,6 +40,13 @@ public class UiRemote2 implements ActionListener,ItemListener{
 
     private JToggleButton btnHideShowPass3;
     private JToggleButton btnHideShowPass4;
+
+    //UIRemote.chat
+    private JPanel panelChat;
+    public JButton btnSend;
+    public JTextArea txtchat;
+    public JTextArea textArea_viewchat;
+    private JButton btnAttach;
 
     /**
      * Launch the application.
@@ -61,6 +70,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
     private String MyIp;
     private String nameDesktop;
     private int Port;
+    private String password;
     public UiRemote2() {
         try {
             MyIp = InetAddress.getLocalHost().getHostAddress();
@@ -69,18 +79,13 @@ public class UiRemote2 implements ActionListener,ItemListener{
             e.printStackTrace();
         }
         initialize(MyIp);
-        getMyIP();
     }
 
-    public static void getMyIP(){
-
-    }
 
     /**
      * Initialize the contents of the frame.
      */
     private void initialize(String MyIp) {
-
         frame1 = new JFrame();
         frame1.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
         frame1.getContentPane().setBackground(new Color(255, 255, 255));
@@ -196,6 +201,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
         mnNewMenu_2.setBackground(SystemColor.scrollbar);
         mnNewMenu_2.setFont(new Font("Segoe UI", Font.BOLD, 15));
         mnNewMenu_2.setForeground(SystemColor.activeCaptionText);
+        mnNewMenu_2.addActionListener(this);
         menuBar.add(mnNewMenu_2);
 
         JLabel lblNewLabel = new JLabel("New label");
@@ -289,6 +295,44 @@ public class UiRemote2 implements ActionListener,ItemListener{
         toggleButton.addItemListener(this);
         panelMain.add(toggleButton);
 
+        //UIRemote.chat
+
+        panelChat = new JPanel();
+        panelChat.setBounds(0,0,653,405);
+        frame1.add(panelChat);
+        panelChat.setLayout(null);
+
+        btnSend = new JButton("Send");
+        btnSend.setBackground(SystemColor.textHighlightText);
+        btnSend.setFont(new Font("Tahoma", Font.BOLD, 15));
+        btnSend.addActionListener(this);
+        btnSend.setBounds(521, 299, 108, 37);
+        panelChat.add(btnSend);
+
+        txtchat = new JTextArea(5,10);
+        txtchat.setLineWrap(true);
+        txtchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        txtchat.setBorder(new LineBorder(new Color(0, 0, 0)));
+        txtchat.setBounds(52, 301, 459, 38);
+        panelChat.add(txtchat);
+
+        textArea_viewchat = new JTextArea();
+        textArea_viewchat.setEditable(false);
+        textArea_viewchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        textArea_viewchat.setToolTipText("");
+        textArea_viewchat.setBounds(0, 0, 639, 294);
+        panelChat.add(textArea_viewchat);
+
+        btnAttach = new JButton("");
+        btnAttach.setBackground(SystemColor.textHighlightText);
+        btnAttach.setIcon(new ImageIcon("image\\attach.png"));
+        btnAttach.setBounds(10, 299, 36, 37);
+        btnAttach.addActionListener(this);
+        panelChat.add(btnAttach);
+        frame1.setBounds(100, 100, 653, 405);
+        frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
     }
 
 
@@ -298,21 +342,38 @@ public class UiRemote2 implements ActionListener,ItemListener{
         {
             panelMain.setVisible(false);
             panelSetting.setVisible(true);
+            panelChat.setVisible(false);
+        }
+        else if(e.getSource() == mnNewMenu_2)
+        {
+            panelMain.setVisible(false);
+            panelSetting.setVisible(false);
+            panelChat.setVisible(true);
         }
         else if(e.getSource() == mnNewMenu){
             panelMain.setVisible(true);
             panelSetting.setVisible(false);
+            panelChat.setVisible(false);
+        }
+        else if(e.getSource() ==btnSend){
+            textArea_viewchat.setText(textArea_viewchat.getText()+"\n"+txtNameDesktop.getText() + " >> " + txtchat.getText());
+//
+        }
+        else if(e.getSource() ==btnAttach){
+            ClassLoader cl = getClass().getClassLoader();
+            File file = new File(cl.getResource("c:\\").getFile());
         }
         else if(e.getSource() == btnConect){
             if(toggleButton.isSelected()){
                 if (txtIpConect != null) {
-                    String password = String.valueOf(txtsetPassword.getPassword());
-                    new ClientInitiator(password,txtIpConect.getText(), Port);
+                    password = String.valueOf(txtsetPassword.getPassword());
+                    new ClientInitiator(txtNameDesktop.getText(),password,txtIpConect.getText(), Port);
                 }
             }
-            else {
-                new ServerInitiator(Port);
-            }
+//            else {
+////                UIRemote.chat(true);
+//                new ServerInitiator(Port);
+//            }
         }
         else if (e.getSource() == btnSave) {
             txtPort.setText(txtPort.getText());
@@ -322,6 +383,7 @@ public class UiRemote2 implements ActionListener,ItemListener{
             Port = Integer.parseInt(txtPort.getText());
         }
     }
+
 
     @Override
     public void itemStateChanged(ItemEvent e) {
@@ -360,4 +422,5 @@ public class UiRemote2 implements ActionListener,ItemListener{
             txtPass.setEchoChar((char)0);
         }
     }
+
 }

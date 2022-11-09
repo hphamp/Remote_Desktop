@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="RemoteClient" />
+    <orderEntry type="module" module-name="UIRemoteDesktop" />
   </component>
 </module>

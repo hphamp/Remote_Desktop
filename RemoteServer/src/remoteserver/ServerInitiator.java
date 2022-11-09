@@ -5,6 +5,8 @@
  */
 package remoteserver;
 
+import UIRemote.Chat;
+
 import java.awt.BorderLayout;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -18,38 +20,41 @@ import javax.swing.JOptionPane;
  * This is the entry class of the server
  */
 public class ServerInitiator {
-    //Main server frame
+    //UIRemote.Main server frame
     public static JFrame frame = new JFrame();
     //JDesktopPane represents the main container that will contain all
     //connected clients' screens
     public static JDesktopPane desktop = new JDesktopPane();
-    public  ServerInitiator(int port){
-        initialize(port);
+    public  ServerInitiator(String NameDesktop,int port){
+        initialize(NameDesktop,port);
     }
 
-    public static void initialize(int port){
+    public static void initialize(String NameDesktop,int port){
         try {
-            ServerSocket sc = new ServerSocket(port);
-            //Listen to server port and accept clients connections
 
-                Socket client = sc.accept();
-                DataInputStream dis = new DataInputStream(client.getInputStream());
-                String pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
-                String getPassByClient = dis.readUTF();
-                 do{
-                    if(pass.equalsIgnoreCase("") || !pass.equals(getPassByClient))
-                    {
-                        JFrame f = new  JFrame ();
-                        JOptionPane.showMessageDialog (f, "Error Password ! Please enter again !","Error",JOptionPane.WARNING_MESSAGE);
-                        pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
-                    }
-                    else break;
-                }while (true);
-                //Show Server GUI
-                drawGUI();
-                System.out.println("New client Connected to the server");
-                //Per each client create a ClientHandler
-                new ClientHandler(client,desktop);
+            //Listen to server port and accept clients connections
+                while (true){
+                    ServerSocket sc = new ServerSocket(port);
+                    Socket client = sc.accept();
+                    new Chat(true,NameDesktop);
+                    DataInputStream dis = new DataInputStream(client.getInputStream());
+                    String pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
+                    String getPassByClient = dis.readUTF();
+                    do{
+                        if(pass.equalsIgnoreCase("") || !pass.equals(getPassByClient))
+                        {
+                            JFrame f = new  JFrame ();
+                            JOptionPane.showMessageDialog (f, "Error Password ! Please enter again !","Error",JOptionPane.WARNING_MESSAGE);
+                            pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
+                        }
+                        else break;
+                    }while (true);
+                    //Show Server GUI
+                    drawGUI();
+                    System.out.println("New client Connected to the server");
+                    //Per each client create a ClientHandler
+                    new ClientHandler(client,desktop);
+                }
 
         } catch (IOException ex) {
             ex.printStackTrace();

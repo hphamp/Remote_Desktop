@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
  * This is the entry class of the server
  */
 public class ServerInitiator {
-    //Main server frame
+    //UIRemote.Main server frame
     private JFrame frame = new JFrame();
     //JDesktopPane represents the main container that will contain all
     //connected clients' screens

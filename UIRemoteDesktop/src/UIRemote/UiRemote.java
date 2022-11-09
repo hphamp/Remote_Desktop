@@ -1,11 +1,13 @@
-import remoteclient.ClientInitiator;
+package UIRemote;
+
 import remoteserver.ServerInitiator;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.net.InetAddress;
-
 
 
 public class UiRemote implements ActionListener,ItemListener{
@@ -24,7 +26,7 @@ public class UiRemote implements ActionListener,ItemListener{
 
     //setting
     private JTextField txtPort;
-    private JTextField txtNameDesktop;
+    public JTextField txtNameDesktop;
     private JLabel lbPort;
 //    private JTextField txtSetPass;
     private JLabel lbNameDesktop;
@@ -70,18 +72,13 @@ public class UiRemote implements ActionListener,ItemListener{
             e.printStackTrace();
         }
         initialize(MyIp);
-        getMyIP();
     }
 
-    public static void getMyIP(){
-
-    }
 
     /**
      * Initialize the contents of the frame.
      */
     private void initialize(String MyIp) {
-
         frame1 = new JFrame();
         frame1.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
         frame1.getContentPane().setBackground(new Color(255, 255, 255));
@@ -197,6 +194,7 @@ public class UiRemote implements ActionListener,ItemListener{
         mnNewMenu_2.setBackground(SystemColor.scrollbar);
         mnNewMenu_2.setFont(new Font("Segoe UI", Font.BOLD, 15));
         mnNewMenu_2.setForeground(SystemColor.activeCaptionText);
+        mnNewMenu_2.addActionListener(this);
         menuBar.add(mnNewMenu_2);
 
         JLabel lblNewLabel = new JLabel("New label");
@@ -289,7 +287,34 @@ public class UiRemote implements ActionListener,ItemListener{
         toggleButton.setBounds(570, 125, 60, 30);
         toggleButton.addItemListener(this);
         panelMain.add(toggleButton);
+    }
 
+
+    public void chat(boolean state){
+//        try {
+//        if(state){
+//            System.out.println("server1");
+//                sc = new ServerSocket(Port-1);
+//                Socket client = sc.accept();
+//                DataInputStream dis= new DataInputStream(client.getInputStream());
+//                if(dis.equals(null)){
+//                    String input = dis.readUTF();
+//                    textArea_viewchat.setText(textArea_viewchat.getText() + "\n"+ input);
+//                }
+//        }
+//        else {
+//            System.out.println("client");
+//
+//
+//                socket = new Socket(txtIpConect.getText(),Port-1);
+//                DataInputStream dis= new DataInputStream(socket.getInputStream());
+//                String input = dis.readUTF();
+//                textArea_viewchat.setText(textArea_viewchat.getText() + "\n"+ input);
+//            System.out.println(txtIpConect.getText());
+//        }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 
@@ -305,15 +330,19 @@ public class UiRemote implements ActionListener,ItemListener{
             panelSetting.setVisible(false);
         }
         else if(e.getSource() == btnConect){
-            if(toggleButton.isSelected()){
-                if (txtIpConect != null) {
-                    password = String.valueOf(txtsetPassword.getPassword());
-                    new ClientInitiator(password,txtIpConect.getText(), Port);
-                }
-            }
-            else {
-                new ServerInitiator(Port);
-            }
+//            if(toggleButton.isSelected()){
+//                if (txtIpConect != null) {
+////                    UIRemote.chat(false);
+//                    password = String.valueOf(txtsetPassword.getPassword());
+//                    new ClientInitiator(password,txtIpConect.getText(), Port);
+//
+//                }
+//            }
+//            else {
+//                UIRemote.chat(true);
+                new ServerInitiator(txtNameDesktop.getText(),Port);
+
+//            }
         }
         else if (e.getSource() == btnSave) {
             txtPort.setText(txtPort.getText());
@@ -323,6 +352,7 @@ public class UiRemote implements ActionListener,ItemListener{
             Port = Integer.parseInt(txtPort.getText());
         }
     }
+
 
     @Override
     public void itemStateChanged(ItemEvent e) {
@@ -361,4 +391,5 @@ public class UiRemote implements ActionListener,ItemListener{
             txtPass.setEchoChar((char)0);
         }
     }
+
 }

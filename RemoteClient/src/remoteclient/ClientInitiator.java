@@ -7,6 +7,8 @@
 
 package remoteclient;
 
+import UIRemote.Chat;
+
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -22,7 +24,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -39,23 +40,24 @@ public class ClientInitiator {
 //        new ClientInitiator().initialize(ip, Integer.parseInt(port));
 //    }
 
-    public ClientInitiator(String password,String ip,int port) {
+    public ClientInitiator(String NameDesktop,String password,String ip,int port) {
 //        String ip = JOptionPane.showInputDialog("Please enter server IP");
 //        String port = JOptionPane.showInputDialog("Please enter server port");
-        initialize(password,ip,port);
+        initialize(NameDesktop,password,ip,port);
     }
 
-    public void initialize(String password,String ip, int port ){
+    public void initialize(String NameDesktop,String password,String ip, int port ){
 
         Robot robot = null; //Used to capture the screen
         Rectangle rectangle = null; //Used to represent screen dimensions
-
         DataOutputStream dos;
 
         try {
+
             System.out.println("Connecting to server ..........");
             socket = new Socket(ip, port);
             System.out.println("Connection Established.");
+            new Chat(false,NameDesktop);
 
             //send password
             dos = new DataOutputStream(socket.getOutputStream());
@@ -80,6 +82,8 @@ public class ClientInitiator {
             new ScreenSpyer(socket,robot,rectangle);
             //ServerDelegate recieves server commands and execute them
             new ServerDelegate(socket,robot);
+
+
         } catch (UnknownHostException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {

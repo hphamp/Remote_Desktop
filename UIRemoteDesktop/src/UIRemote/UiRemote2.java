@@ -368,6 +368,8 @@ public class UiRemote2 implements ActionListener,ItemListener{
                 if (txtIpConect != null) {
                     password = String.valueOf(txtsetPassword.getPassword());
                     new ClientInitiator(txtNameDesktop.getText(),password,txtIpConect.getText(), Port);
+                    new Chat(false,txtNameDesktop.getText());
+
                 }
             }
 //            else {

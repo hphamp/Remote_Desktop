@@ -5,63 +5,31 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Chat  implements ActionListener {
+public class Chat extends Thread implements ActionListener{
     private JFrame frame;
     private JPanel panelChat;
     public JButton btnSend;
     public JTextArea txtchat;
     public JTextArea textArea_viewchat;
     private JButton btnAttach;
-//    public static void main(String[] args) {
-//        new Chat();
-//    }
     public String nameDesktop;
+    public boolean type;
     public Chat(boolean type,String NameDesktop){
+        this.type = type;
         this.nameDesktop=NameDesktop;
-        drawUI(NameDesktop);
-        Classify(type);
+        this.start();
     }
 
-    private DataInputStream dis;
-    private DataOutputStream dos;
-    private Socket soc;
-    private ServerSocket serSoc;
+    public DataOutputStream dos;
+    public DataInputStream disFile;
+    public DataOutputStream dosFile;
+    @Override
+    public void run(){
 
-    private void Classify(boolean type){
-        if(type){
-            try {
-                serSoc = new ServerSocket(2000);
-                soc = serSoc.accept();
-                dis = new DataInputStream(soc.getInputStream());
-                System.out.println(dis.readUTF());
-                dos = new DataOutputStream(soc.getOutputStream());
-                dos.writeUTF("xin chao Client !!!");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            try {
-                soc = new Socket("localhost",2000);
-                dis = new DataInputStream(soc.getInputStream());
-                System.out.println(dis.readUTF());
-                dos = new DataOutputStream(soc.getOutputStream());
-                dos.writeUTF("xin chao Server !!!");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-    }
-
-    public void drawUI(String NameDesktop){
         frame = new JFrame();
         frame.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
         frame.getContentPane().setBackground(new Color(255, 255, 255));
@@ -78,7 +46,6 @@ public class Chat  implements ActionListener {
         btnSend = new JButton("Send");
         btnSend.setBackground(SystemColor.textHighlightText);
         btnSend.setFont(new Font("Tahoma", Font.BOLD, 15));
-        btnSend.addActionListener(this);
         btnSend.setBounds(521, 299, 108, 37);
         panelChat.add(btnSend);
 
@@ -100,23 +67,109 @@ public class Chat  implements ActionListener {
         btnAttach.setBackground(SystemColor.textHighlightText);
         btnAttach.setIcon(new ImageIcon("image\\attach.png"));
         btnAttach.setBounds(10, 299, 36, 37);
+
+        btnSend.addActionListener(this);
         btnAttach.addActionListener(this);
+
         panelChat.add(btnAttach);
         frame.setBounds(100, 100, 653, 405);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.add(panelChat);
         this.frame.setVisible(true);
-    }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() ==btnSend){
-            textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + nameDesktop +" >> " + txtchat.getText());
+
+        if(type){
+            ServerSocket serverSocket = null;
+            try {
+                System.out.println("Binding to port " + 2000 + ", please wait  ...");
+                serverSocket = new ServerSocket(2000);
+                System.out.println("Server started: " + serverSocket);
+                System.out.println("Waiting for a client ...");
+
+                    try {
+                        Socket socket = serverSocket.accept();
+                        System.out.println("Client accepted: " + socket);
+                        while (true) {
+                            dos = new DataOutputStream(socket.getOutputStream());
+                            DataInputStream dis = new DataInputStream(socket.getInputStream());
+                        while (true) {
+                            if(dis!=null){
+                                String ch = dis.readUTF();
+//                                disFile = new DataInputStream(new FileInputStream("D:\\ABC.docx"));
+                                textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
+                                System.out.println(ch);
+                            }
+                        }
+
+
+
+                        }
+                    } catch (IOException e) {
+                        System.err.println(" Connection Error: " + e);
+                    }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+
         }
-        else if(e.getSource() ==btnAttach){
-            ClassLoader cl = getClass().getClassLoader();
-            File file = new File(cl.getResource("c:\\").getFile());
+        else {
+            Socket socket = null;
+            try {
+                socket = new Socket("localhost", 2000); // Connect to server
+                System.out.println("Connected: " + socket);
+
+                dos = new DataOutputStream(socket.getOutputStream());
+                DataInputStream dis = new DataInputStream(socket.getInputStream());
+
+                    while (true) {
+                        if(dis!=null){
+                            String ch = dis.readUTF();
+//                            byte[] buffer = new byte[8192];
+//                            disFile = new DataInputStream(new FileInputStream("D:\\ABC.docx"));
+//                            disFile.read(buffer);
+                            textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
+                            System.out.println(ch);
+                        }
+                    }
+
+            } catch (IOException ie) {
+                System.out.println("Can't connect to server");
+            }
         }
     }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fc = new JFileChooser();
+            if(e.getSource() ==btnAttach){
+                int sc = fc.showOpenDialog(frame);
+                if(sc == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        JFrame f = new  JFrame ();
+                        int a=JOptionPane.showConfirmDialog(f,"Do you want send " + fc.getSelectedFile().getName());
+                        if(a==JOptionPane.YES_OPTION){
+                            dos.writeUTF(nameDesktop +" >> send a file : " +
+                                    fc.getSelectedFile().getName());
+                            dosFile=new DataOutputStream(new FileOutputStream(fc.getSelectedFile().getAbsolutePath()));
+
+                            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        }
+
+                        System.out.println("Path: " +
+                                fc.getSelectedFile().getAbsolutePath());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                }
+            }
+            if(e.getSource()==btnSend){
+                        try {
+                            dos.writeUTF(nameDesktop + " >> " + txtchat.getText());
+                            textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + nameDesktop + " >> " + txtchat.getText());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+            }
+        }
 }

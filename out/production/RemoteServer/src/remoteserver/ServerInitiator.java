@@ -5,8 +5,6 @@
  */
 package remoteserver;
 
-import UIRemote.Chat;
-
 import java.awt.BorderLayout;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -19,24 +17,27 @@ import javax.swing.JOptionPane;
 /**
  * This is the entry class of the server
  */
-public class ServerInitiator {
+public class ServerInitiator extends Thread{
     //UIRemote.Main server frame
     public static JFrame frame = new JFrame();
     //JDesktopPane represents the main container that will contain all
     //connected clients' screens
     public static JDesktopPane desktop = new JDesktopPane();
-    public  ServerInitiator(String NameDesktop,int port){
-        initialize(NameDesktop,port);
+    private String NameDesktop;
+    private int port;
+    public  ServerInitiator(String NameDesktop, int port){
+        this.NameDesktop=NameDesktop;
+        this.port = port;
+        this.start();
     }
 
-    public static void initialize(String NameDesktop,int port){
+    @Override
+    public void run(){
         try {
-
+            System.out.println(port);
+            ServerSocket sc = new ServerSocket(port);
+            Socket client = sc.accept();
             //Listen to server port and accept clients connections
-                while (true){
-                    ServerSocket sc = new ServerSocket(port);
-                    Socket client = sc.accept();
-                    new Chat(true,NameDesktop);
                     DataInputStream dis = new DataInputStream(client.getInputStream());
                     String pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
                     String getPassByClient = dis.readUTF();
@@ -54,7 +55,9 @@ public class ServerInitiator {
                     System.out.println("New client Connected to the server");
                     //Per each client create a ClientHandler
                     new ClientHandler(client,desktop);
-                }
+//                    ServerSocket sc1 = new ServerSocket(port+1);
+//                    Socket client1 = sc1.accept();
+//                    new Chat(true,NameDesktop,client);
 
         } catch (IOException ex) {
             ex.printStackTrace();

@@ -341,6 +341,7 @@ public class UiRemote implements ActionListener,ItemListener{
 //            else {
 //                UIRemote.chat(true);
                 new ServerInitiator(txtNameDesktop.getText(),Port);
+            new Chat(true,txtNameDesktop.getText());
 
 //            }
         }

@@ -7,8 +7,6 @@
 
 package remoteclient;
 
-import UIRemote.Chat;
-
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -30,24 +28,25 @@ import javax.swing.JFrame;
  * This class is responsible for connecting to the server
  * and starting ScreenSpyer and ServerDelegate classes
  */
-public class ClientInitiator {
+public class ClientInitiator  extends Thread{
 
     Socket socket = null;
+    private String NameDesktop;
+    private String password;
+    private String ip;
+    private int port;
 
-//    public static void main(String[] args){
-//        String ip = JOptionPane.showInputDialog("Please enter server IP");
-//        String port = JOptionPane.showInputDialog("Please enter server port");
-//        new ClientInitiator().initialize(ip, Integer.parseInt(port));
-//    }
 
-    public ClientInitiator(String NameDesktop,String password,String ip,int port) {
-//        String ip = JOptionPane.showInputDialog("Please enter server IP");
-//        String port = JOptionPane.showInputDialog("Please enter server port");
-        initialize(NameDesktop,password,ip,port);
+    public ClientInitiator(String NameDesktop, String password, String ip, int port) {
+
+        this.NameDesktop= NameDesktop;
+        this.password=password;
+        this.ip = ip;
+        this.port = port;
+        this.start();
     }
-
-    public void initialize(String NameDesktop,String password,String ip, int port ){
-
+    @Override
+    public void run(){
         Robot robot = null; //Used to capture the screen
         Rectangle rectangle = null; //Used to represent screen dimensions
         DataOutputStream dos;
@@ -56,8 +55,9 @@ public class ClientInitiator {
 
             System.out.println("Connecting to server ..........");
             socket = new Socket(ip, port);
+
             System.out.println("Connection Established.");
-            new Chat(false,NameDesktop);
+
 
             //send password
             dos = new DataOutputStream(socket.getOutputStream());
@@ -83,6 +83,8 @@ public class ClientInitiator {
             //ServerDelegate recieves server commands and execute them
             new ServerDelegate(socket,robot);
 
+//            Socket socket2 = new Socket(ip, port+1);
+//            new Chat(false,NameDesktop,socket);
 
         } catch (UnknownHostException ex) {
             ex.printStackTrace();

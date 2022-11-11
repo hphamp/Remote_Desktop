@@ -1,13 +1,14 @@
+
 package UIRemote;
 
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+        import javax.swing.*;
+        import javax.swing.border.LineBorder;
+        import java.awt.*;
+        import java.awt.event.ActionEvent;
+        import java.awt.event.ActionListener;
+        import java.io.*;
+        import java.net.ServerSocket;
+        import java.net.Socket;
 
 public class Chat extends Thread implements ActionListener{
     private JFrame frame;
@@ -18,15 +19,19 @@ public class Chat extends Thread implements ActionListener{
     private JButton btnAttach;
     public String nameDesktop;
     public boolean type;
+    public xuly xl;
     public Chat(boolean type,String NameDesktop){
         this.type = type;
         this.nameDesktop=NameDesktop;
         this.start();
+        xl = new xuly(type);
+        xl.start();
     }
 
-    public DataOutputStream dos;
-    public DataInputStream disFile;
-    public DataOutputStream dosFile;
+
+    public static DataOutputStream dos;
+    public static DataInputStream dis;
+    public static Socket socket = null;
     @Override
     public void run(){
 
@@ -79,7 +84,9 @@ public class Chat extends Thread implements ActionListener{
         this.frame.setVisible(true);
 
 
+
         if(type){
+
             ServerSocket serverSocket = null;
             try {
                 System.out.println("Binding to port " + 2000 + ", please wait  ...");
@@ -87,89 +94,174 @@ public class Chat extends Thread implements ActionListener{
                 System.out.println("Server started: " + serverSocket);
                 System.out.println("Waiting for a client ...");
 
-                    try {
-                        Socket socket = serverSocket.accept();
-                        System.out.println("Client accepted: " + socket);
-                        while (true) {
-                            dos = new DataOutputStream(socket.getOutputStream());
-                            DataInputStream dis = new DataInputStream(socket.getInputStream());
-                        while (true) {
-                            if(dis!=null){
-                                String ch = dis.readUTF();
-//                                disFile = new DataInputStream(new FileInputStream("D:\\ABC.docx"));
-                                textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
-                                System.out.println(ch);
-                            }
-                        }
-
-
-
-                        }
-                    } catch (IOException e) {
-                        System.err.println(" Connection Error: " + e);
+                try {
+                    socket = serverSocket.accept();
+                    System.out.println("Client accepted: " + socket);
+                    dos = new DataOutputStream(socket.getOutputStream());
+                    dis = new DataInputStream(socket.getInputStream());
+                    while (true) {
+                        String ch = dis.readUTF();
+                        textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
                     }
+
+                } catch (IOException e) {
+                    System.err.println(" Connection Error: " + e);
+                }
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
 
         }
         else {
-            Socket socket = null;
+
             try {
                 socket = new Socket("localhost", 2000); // Connect to server
                 System.out.println("Connected: " + socket);
-
                 dos = new DataOutputStream(socket.getOutputStream());
-                DataInputStream dis = new DataInputStream(socket.getInputStream());
-
-                    while (true) {
-                        if(dis!=null){
-                            String ch = dis.readUTF();
-//                            byte[] buffer = new byte[8192];
-//                            disFile = new DataInputStream(new FileInputStream("D:\\ABC.docx"));
-//                            disFile.read(buffer);
-                            textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
-                            System.out.println(ch);
-                        }
-                    }
-
-            } catch (IOException ie) {
+                dis = new DataInputStream(socket.getInputStream());
+                while (true) {
+                    String ch = dis.readUTF();
+                    textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
+                }
+            } catch (Exception e) {
                 System.out.println("Can't connect to server");
+                throw new RuntimeException(e);
             }
         }
     }
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JFileChooser fc = new JFileChooser();
-            if(e.getSource() ==btnAttach){
-                int sc = fc.showOpenDialog(frame);
-                if(sc == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        JFrame f = new  JFrame ();
-                        int a=JOptionPane.showConfirmDialog(f,"Do you want send " + fc.getSelectedFile().getName());
-                        if(a==JOptionPane.YES_OPTION){
-                            dos.writeUTF(nameDesktop +" >> send a file : " +
-                                    fc.getSelectedFile().getName());
-                            dosFile=new DataOutputStream(new FileOutputStream(fc.getSelectedFile().getAbsolutePath()));
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        if(e.getSource() ==btnAttach){
 
-                            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        }
-
-                        System.out.println("Path: " +
-                                fc.getSelectedFile().getAbsolutePath());
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+            int sc = fc.showOpenDialog(frame);
+            if(sc == JFileChooser.APPROVE_OPTION) {
+                try {
+                    JFrame f = new  JFrame ();
+                    int a=JOptionPane.showConfirmDialog(f,"Do you want send " + fc.getSelectedFile().getName());
+                    if(a==JOptionPane.YES_OPTION){
+                        dos.writeUTF(nameDesktop +" >> send a file : " +
+                                fc.getSelectedFile().getName());
+//                       xuly xl = new xuly(fc.getSelectedFile().getAbsolutePath(),type);
+                        xl.sendFile(fc.getSelectedFile().getAbsolutePath());
+                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     }
 
+                    System.out.println("Path: " +
+                            fc.getSelectedFile().getAbsolutePath());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
-            }
-            if(e.getSource()==btnSend){
-                        try {
-                            dos.writeUTF(nameDesktop + " >> " + txtchat.getText());
-                            textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + nameDesktop + " >> " + txtchat.getText());
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+
             }
         }
+        if(e.getSource()==btnSend){
+            try {
+                dos.writeUTF(nameDesktop + " >> " + txtchat.getText());
+                textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + nameDesktop + " >> " + txtchat.getText());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+}
+
+
+
+class xuly extends Thread{
+    public static Socket socket;
+
+    private static DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
+    public boolean type;
+    public xuly(boolean type){
+        this.type = type;
+    }
+    public int numberFile = 0;
+    @Override
+    public void run() {
+        super.run();
+        System.out.println("da start" + type);
+        try {
+            if(type){
+                ServerSocket serverSc = new ServerSocket(2001);
+                socket = serverSc.accept();
+                receiveFile("Client" + numberFile+".pdf");
+            }
+            else {
+                socket = new Socket("localhost",2001);
+                receiveFile("Server" + numberFile+".pdf");
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException();
+        }
+    }
+    public void receiveFile(String path)
+    {
+        System.out.println("ham send file");
+        try {
+            String linkPath;
+            while (true) {
+                linkPath = "newFile"+numberFile+path;
+                System.out.println("numberFile ================= " + numberFile);
+                dataInputStream = new DataInputStream(
+                        socket.getInputStream());
+                int bytes = 0;
+
+                long size
+                        = dataInputStream.readLong();
+                if(size!=0){
+                    FileOutputStream fileOutputStream
+                            = new FileOutputStream(linkPath);
+                    numberFile++;
+
+                    // read file size
+                    byte[] buffer = new byte[4 * 1024];
+                    while (size > 0
+                            && (bytes = dataInputStream.read(
+                            buffer, 0,
+                            (int)Math.min(buffer.length, size)))
+                            != -1) {
+                        // Here we write the file using write method
+                        fileOutputStream.write(buffer, 0, bytes);
+                        size -= bytes; // read upto file size
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException();
+        }
+    }
+    public static void sendFile(String path)
+            throws Exception
+    {
+        dataOutputStream = new DataOutputStream(
+                socket.getOutputStream());
+        int bytes = 0;
+        // Open the File where he located in your pc
+        File file = new File(path);
+        FileInputStream fileInputStream
+                = new FileInputStream(file);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + path);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + dataOutputStream);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : "+ socket);
+
+
+        // Here we send the File to Server
+        dataOutputStream.writeLong(file.length());
+        // Here we  break file into chunks
+        byte[] buffer = new byte[4 * 1024];
+        while ((bytes = fileInputStream.read(buffer))
+                != -1) {
+            // Send the file to Server Socket
+            dataOutputStream.write(buffer, 0, bytes);
+            dataOutputStream.flush();
+        }
+        // close the file here
+        fileInputStream.close();
+    }
 }

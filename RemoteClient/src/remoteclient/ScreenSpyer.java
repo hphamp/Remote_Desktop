@@ -8,11 +8,13 @@ package remoteclient;
 
 import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 /**
  * This class is responisble for sending sreenshot every predefined duration
@@ -32,8 +34,8 @@ class ScreenSpyer extends Thread {
     }
 
     public void run(){
-        ObjectOutputStream oos = null; //Used to write an object to the streem
 
+        ObjectOutputStream oos = null; //Used to write an object to the streem
 
         try{
             //Prepare ObjectOutputStream
@@ -47,6 +49,7 @@ class ScreenSpyer extends Thread {
             ex.printStackTrace();
         }
 
+
        while(continueLoop){
             //Capture screen
             BufferedImage image = robot.createScreenCapture(rectangle);
@@ -57,12 +60,15 @@ class ScreenSpyer extends Thread {
 
             //Send captured screen to the server
             try {
-                System.out.println("before sending image");
-                oos.writeObject(imageIcon);
-                oos.reset(); //Clear ObjectOutputStream cache
-                System.out.println("New screenshot sent");
-            } catch (IOException ex) {
+
+                    System.out.println("before sending image");
+                    oos.writeObject(imageIcon);
+                    oos.reset(); //Clear ObjectOutputStream cache
+                    System.out.println("New screenshot sent");
+
+            } catch (Exception ex) {
                ex.printStackTrace();
+               break;
             }
 
             //wait for 100ms to reduce network traffic

@@ -1,18 +1,20 @@
 
 package UIRemote;
 
-        import javax.swing.*;
-        import javax.swing.border.LineBorder;
-        import java.awt.*;
-        import java.awt.event.ActionEvent;
-        import java.awt.event.ActionListener;
-        import java.io.*;
-        import java.net.ServerSocket;
-        import java.net.Socket;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import static remoteserver.ServerInitiator.frame;
 
 public class Chat extends Thread implements ActionListener{
-    private JFrame frame;
-    private JPanel panelChat;
+//    private JFrame frame;
+//    private JPanel panelChat;
     public JButton btnSend;
     public JTextArea txtchat;
     public JTextArea textArea_viewchat;
@@ -20,7 +22,9 @@ public class Chat extends Thread implements ActionListener{
     public String nameDesktop;
     public boolean type;
     public xuly xl;
-    public Chat(boolean type,String NameDesktop){
+    public UiRemote uir;
+    public Chat(UiRemote uir,boolean type,String NameDesktop){
+        this.uir = uir;
         this.type = type;
         this.nameDesktop=NameDesktop;
         this.start();
@@ -35,38 +39,38 @@ public class Chat extends Thread implements ActionListener{
     @Override
     public void run(){
 
-        frame = new JFrame();
-        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
-        frame.getContentPane().setBackground(new Color(255, 255, 255));
-        frame.setBounds(100, 100, 653, 405);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+//        frame = new JFrame();
+//        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
+//        frame.getContentPane().setBackground(new Color(255, 255, 255));
+//        frame.setBounds(100, 100, 653, 405);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setVisible(true);
 
         //UIRemote.chat
 
-        panelChat = new JPanel();
-        panelChat.setBounds(0,0,653,405);
-        panelChat.setLayout(null);
+//        panelChat = new JPanel();
+//        panelChat.setBounds(0,0,653,405);
+//        panelChat.setLayout(null);
 
         btnSend = new JButton("Send");
         btnSend.setBackground(SystemColor.textHighlightText);
         btnSend.setFont(new Font("Tahoma", Font.BOLD, 15));
         btnSend.setBounds(521, 299, 108, 37);
-        panelChat.add(btnSend);
+        uir.panelChat.add(btnSend);
 
         txtchat = new JTextArea(5,10);
         txtchat.setLineWrap(true);
         txtchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         txtchat.setBorder(new LineBorder(new Color(0, 0, 0)));
         txtchat.setBounds(52, 301, 459, 38);
-        panelChat.add(txtchat);
+        uir.panelChat.add(txtchat);
 
         textArea_viewchat = new JTextArea();
         textArea_viewchat.setEditable(false);
         textArea_viewchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         textArea_viewchat.setToolTipText("");
         textArea_viewchat.setBounds(0, 0, 639, 294);
-        panelChat.add(textArea_viewchat);
+        uir.panelChat.add(textArea_viewchat);
 
         btnAttach = new JButton("");
         btnAttach.setBackground(SystemColor.textHighlightText);
@@ -76,12 +80,12 @@ public class Chat extends Thread implements ActionListener{
         btnSend.addActionListener(this);
         btnAttach.addActionListener(this);
 
-        panelChat.add(btnAttach);
+        uir.panelChat.add(btnAttach);
         frame.setBounds(100, 100, 653, 405);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frame.add(panelChat);
-        this.frame.setVisible(true);
+        uir.frame1.add(uir.panelChat);
+        uir.panelChat.setVisible(true);
 
 
 

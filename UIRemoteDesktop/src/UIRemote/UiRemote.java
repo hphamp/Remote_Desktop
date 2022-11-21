@@ -1,5 +1,6 @@
 package UIRemote;
 
+import remoteclient.ClientInitiator;
 import remoteserver.ServerInitiator;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.net.InetAddress;
 
 public class UiRemote implements ActionListener,ItemListener{
 
-    private JFrame frame1;
+    JFrame frame1;
     private JPanel panelMain;
     private JTextField txtIpConect;
     private JPasswordField txtPass;
@@ -40,6 +41,9 @@ public class UiRemote implements ActionListener,ItemListener{
 
     private JToggleButton btnHideShowPass3;
     private JToggleButton btnHideShowPass4;
+
+    //chat
+    JPanel panelChat;
 
     /**
      * Launch the application.
@@ -287,35 +291,13 @@ public class UiRemote implements ActionListener,ItemListener{
         toggleButton.setBounds(570, 125, 60, 30);
         toggleButton.addItemListener(this);
         panelMain.add(toggleButton);
+
+        panelChat = new JPanel();
+        panelChat.setBounds(0,0,653,405);
+        panelChat.setLayout(null);
     }
 
 
-    public void chat(boolean state){
-//        try {
-//        if(state){
-//            System.out.println("server1");
-//                sc = new ServerSocket(Port-1);
-//                Socket client = sc.accept();
-//                DataInputStream dis= new DataInputStream(client.getInputStream());
-//                if(dis.equals(null)){
-//                    String input = dis.readUTF();
-//                    textArea_viewchat.setText(textArea_viewchat.getText() + "\n"+ input);
-//                }
-//        }
-//        else {
-//            System.out.println("client");
-//
-//
-//                socket = new Socket(txtIpConect.getText(),Port-1);
-//                DataInputStream dis= new DataInputStream(socket.getInputStream());
-//                String input = dis.readUTF();
-//                textArea_viewchat.setText(textArea_viewchat.getText() + "\n"+ input);
-//            System.out.println(txtIpConect.getText());
-//        }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-    }
 
 
     @Override
@@ -324,12 +306,20 @@ public class UiRemote implements ActionListener,ItemListener{
         {
             panelMain.setVisible(false);
             panelSetting.setVisible(true);
+            panelChat.setVisible(false);
         }
         else if(e.getSource() == mnNewMenu){
             panelMain.setVisible(true);
             panelSetting.setVisible(false);
+            panelChat.setVisible(false);
+        }
+        else if(e.getSource() == mnNewMenu_2){
+            panelMain.setVisible(false);
+            panelSetting.setVisible(false);
+            panelChat.setVisible(true);
         }
         else if(e.getSource() == btnConect){
+
 //            if(toggleButton.isSelected()){
 //                if (txtIpConect != null) {
 ////                    UIRemote.chat(false);
@@ -340,8 +330,29 @@ public class UiRemote implements ActionListener,ItemListener{
 //            }
 //            else {
 //                UIRemote.chat(true);
-                new ServerInitiator(txtNameDesktop.getText(),Port);
-            new Chat(true,txtNameDesktop.getText());
+//                new ServerInitiator(txtNameDesktop.getText(),Port);
+//            boolean connect = false;
+//            if(btnConect.getText().equals("CONNECT")){
+//                connect = true;
+//                btnConect.setText("Pause");
+//            }
+//            else{
+//                connect = false;
+//                btnConect.setText("CONNECT");
+//            }
+            if(toggleButton.isSelected()){
+                if (txtIpConect != null) {
+                    password = String.valueOf(txtsetPassword.getPassword());
+                    new ClientInitiator(txtNameDesktop.getText(),password,txtIpConect.getText(), Port);
+                        new Chat(this,false,txtNameDesktop.getText());
+                }
+            }
+            else{
+                    new ServerInitiator(txtNameDesktop.getText(),Port);
+                        new Chat(this,true,txtNameDesktop.getText());
+
+            }
+
 
 //            }
         }

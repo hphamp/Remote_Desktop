@@ -2,13 +2,17 @@
 package UIRemote;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import static remoteserver.ServerInitiator.frame;
 
@@ -18,110 +22,93 @@ public class Chat extends Thread implements ActionListener{
     public JButton btnSend;
     public JTextArea txtchat;
     public JTextArea textArea_viewchat;
-    private JButton btnAttach;
     public String nameDesktop;
     public boolean type;
     public xuly xl;
     public UiRemote uir;
+    public File[] fileToSend = new File[1];
     public Chat(UiRemote uir,boolean type,String NameDesktop){
         this.uir = uir;
         this.type = type;
         this.nameDesktop=NameDesktop;
         this.start();
-        xl = new xuly(type);
+        xl = new xuly(this.uir,type);
         xl.start();
     }
 
 
     public static DataOutputStream dos;
     public static DataInputStream dis;
+    public static DataOutputStream dosFile;
+    public static DataInputStream disFile;
     public static Socket socket = null;
+    public static Socket socketFile = null;
     @Override
     public void run(){
-
-//        frame = new JFrame();
-//        frame.setIconImage(Toolkit.getDefaultToolkit().getImage("image\\MetroUI-Apps-Alt-3-icon.png"));
-//        frame.getContentPane().setBackground(new Color(255, 255, 255));
-//        frame.setBounds(100, 100, 653, 405);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-
-        //UIRemote.chat
-
-//        panelChat = new JPanel();
-//        panelChat.setBounds(0,0,653,405);
-//        panelChat.setLayout(null);
-
         btnSend = new JButton("Send");
         btnSend.setBackground(SystemColor.textHighlightText);
         btnSend.setFont(new Font("Tahoma", Font.BOLD, 15));
-        btnSend.setBounds(521, 299, 108, 37);
+        btnSend.setBounds(474, 299, 108, 37);
         uir.panelChat.add(btnSend);
 
         txtchat = new JTextArea(5,10);
         txtchat.setLineWrap(true);
         txtchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         txtchat.setBorder(new LineBorder(new Color(0, 0, 0)));
-        txtchat.setBounds(52, 301, 459, 38);
+        txtchat.setBounds(0, 301, 400, 38); //159
         uir.panelChat.add(txtchat);
 
         textArea_viewchat = new JTextArea();
         textArea_viewchat.setEditable(false);
         textArea_viewchat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         textArea_viewchat.setToolTipText("");
-        textArea_viewchat.setBounds(0, 0, 639, 294);
+        textArea_viewchat.setBorder(new LineBorder(new Color(0, 0, 0)));
+        textArea_viewchat.setBounds(0, 0, 400, 294); // 639
         uir.panelChat.add(textArea_viewchat);
 
-        btnAttach = new JButton("");
-        btnAttach.setBackground(SystemColor.textHighlightText);
-        btnAttach.setIcon(new ImageIcon("image\\attach.png"));
-        btnAttach.setBounds(10, 299, 36, 37);
 
         btnSend.addActionListener(this);
-        btnAttach.addActionListener(this);
 
-        uir.panelChat.add(btnAttach);
         frame.setBounds(100, 100, 653, 405);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         uir.frame1.add(uir.panelChat);
         uir.panelChat.setVisible(true);
 
-
-
         if(type){
 
             ServerSocket serverSocket = null;
+
             try {
                 System.out.println("Binding to port " + 2000 + ", please wait  ...");
                 serverSocket = new ServerSocket(2000);
                 System.out.println("Server started: " + serverSocket);
                 System.out.println("Waiting for a client ...");
 
-                try {
+//                try {
                     socket = serverSocket.accept();
+
                     System.out.println("Client accepted: " + socket);
                     dos = new DataOutputStream(socket.getOutputStream());
+                    System.out.println("dos Server : ==== " +dos);
                     dis = new DataInputStream(socket.getInputStream());
                     while (true) {
+
                         String ch = dis.readUTF();
                         textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
-                    }
 
-                } catch (IOException e) {
-                    System.err.println(" Connection Error: " + e);
-                }
-            } catch (Exception e1) {
-                e1.printStackTrace();
+                    }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }
         else {
-
             try {
                 socket = new Socket("localhost", 2000); // Connect to server
                 System.out.println("Connected: " + socket);
                 dos = new DataOutputStream(socket.getOutputStream());
+                System.out.println("dos Client : ==== " +dos);
                 dis = new DataInputStream(socket.getInputStream());
                 while (true) {
                     String ch = dis.readUTF();
@@ -135,32 +122,6 @@ public class Chat extends Thread implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        JFileChooser fc = new JFileChooser();
-        if(e.getSource() ==btnAttach){
-
-            int sc = fc.showOpenDialog(frame);
-            if(sc == JFileChooser.APPROVE_OPTION) {
-                try {
-                    JFrame f = new  JFrame ();
-                    int a=JOptionPane.showConfirmDialog(f,"Do you want send " + fc.getSelectedFile().getName());
-                    if(a==JOptionPane.YES_OPTION){
-                        dos.writeUTF(nameDesktop +" >> send a file : " +
-                                fc.getSelectedFile().getName());
-//                       xuly xl = new xuly(fc.getSelectedFile().getAbsolutePath(),type);
-                        xl.sendFile(fc.getSelectedFile().getAbsolutePath());
-                        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    }
-
-                    System.out.println("Path: " +
-                            fc.getSelectedFile().getAbsolutePath());
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-            }
-        }
         if(e.getSource()==btnSend){
             try {
                 dos.writeUTF(nameDesktop + " >> " + txtchat.getText());
@@ -174,98 +135,294 @@ public class Chat extends Thread implements ActionListener{
 
 
 
-class xuly extends Thread{
-    public static Socket socket;
-
-    private static DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+class xuly extends Thread implements ActionListener {
+    public static DataOutputStream dosFile;
+    public static DataInputStream disFile;
+    public static Socket socketFile = null;
     public boolean type;
-    public xuly(boolean type){
+    JLabel jlFileName;
+    JButton jbChooseFile;
+    JButton jbSendFile;
+    static JPanel jPanelFile;
+    JScrollPane jScrollPane;
+    static UiRemote uir;
+    public xuly(UiRemote uir,boolean type)
+    {
+        this.uir = uir;
         this.type = type;
+
+        ///////////////////////////////////////
+        jlFileName = new JLabel("Chose a file to send");
+        jlFileName.setFont(new Font("Arial", Font.BOLD, 14));
+        jlFileName.setBounds(430, 0, 365, 26);
+        uir.panelChat.add(jlFileName);
+
+        jbChooseFile = new JButton("Choose File");
+        jbChooseFile.setBounds(408, 40, 110, 40);
+
+        jbChooseFile.setPreferredSize(new Dimension(100, 40));
+        jbChooseFile.setFont(new Font("Arial", Font.BOLD,12));
+        jbChooseFile.addActionListener(this);
+        uir.panelChat.add(jbChooseFile);
+
+        jbSendFile = new JButton("Send File");
+        jbSendFile.setBounds(512, 40, 110, 40);
+        jbSendFile.addActionListener(this);
+        uir.panelChat.add(jbSendFile);
+
+        jPanelFile = new JPanel();
+        jPanelFile.setBounds(408,82,220,210);
+        jPanelFile.setBackground(new Color(245, 194, 194));
+        jPanelFile.setLayout(new BoxLayout(jPanelFile, BoxLayout.Y_AXIS));
+
+        jScrollPane = new JScrollPane(jPanelFile);
+        jScrollPane.setBackground(new Color(232, 25, 25));
+        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        uir.panelChat.add(jPanelFile);
+        uir.panelChat.add(jScrollPane);
+        //////////////////////////////////////////
     }
-    public int numberFile = 0;
+    static ArrayList<MyFile> myfile = new ArrayList<>();
+    final File[] fileToSend = new File[1];
+    static JPanel jpFileRow;
     @Override
     public void run() {
         super.run();
         System.out.println("da start" + type);
+        ServerSocket serverSocketFile = null;
         try {
             if(type){
-                ServerSocket serverSc = new ServerSocket(2001);
-                socket = serverSc.accept();
-                receiveFile("Client" + numberFile+".pdf");
+                serverSocketFile = new ServerSocket(1234);
+                socketFile = serverSocketFile.accept();
+                ReceiveFile();
             }
             else {
-                socket = new Socket("localhost",2001);
-                receiveFile("Server" + numberFile+".pdf");
+                socketFile = new Socket("localhost", 1234);
+                ReceiveFile();
             }
         }
         catch (Exception e){
-            throw new RuntimeException();
+//            throw new RuntimeException();
+            e.printStackTrace();
         }
     }
-    public void receiveFile(String path)
-    {
-        System.out.println("ham send file");
+    public static void ReceiveFile(){
         try {
-            String linkPath;
+            int fileId = 0;
+            dosFile = new DataOutputStream(socketFile.getOutputStream());
+            disFile = new DataInputStream(socketFile.getInputStream());
             while (true) {
-                linkPath = "newFile"+numberFile+path;
-                System.out.println("numberFile ================= " + numberFile);
-                dataInputStream = new DataInputStream(
-                        socket.getInputStream());
-                int bytes = 0;
+                int fileNameLength = disFile.readInt();
+                if (fileNameLength > 0) {
+                    byte[] fileNameBytes = new byte[fileNameLength];
+                    disFile.readFully(fileNameBytes, 0, fileNameBytes.length);
+                    String fileName = new String(fileNameBytes);
 
-                long size
-                        = dataInputStream.readLong();
-                if(size!=0){
-                    FileOutputStream fileOutputStream
-                            = new FileOutputStream(linkPath);
-                    numberFile++;
+                    int fileContentLength = disFile.readInt();
 
-                    // read file size
-                    byte[] buffer = new byte[4 * 1024];
-                    while (size > 0
-                            && (bytes = dataInputStream.read(
-                            buffer, 0,
-                            (int)Math.min(buffer.length, size)))
-                            != -1) {
-                        // Here we write the file using write method
-                        fileOutputStream.write(buffer, 0, bytes);
-                        size -= bytes; // read upto file size
+                    if (fileContentLength > 0) {
+                        byte[] fileContentByte = new byte[fileContentLength];
+                        disFile.readFully(fileContentByte, 0, fileContentLength);
+
+                        jpFileRow = new JPanel();
+                        jpFileRow.setBounds(0, 0, 10, 10);
+                        jpFileRow.setBackground(new Color(245, 194, 194));
+                        jpFileRow.setLayout(new BoxLayout(jpFileRow, BoxLayout.Y_AXIS));
+
+                        JLabel jlFileName = new JLabel(fileName);
+                        jlFileName.setFont(new Font("Arial", Font.BOLD, 16));
+                        jlFileName.setBorder(new EmptyBorder(10, 0, 10, 0));
+
+                        if (getFileExtension(fileName).equalsIgnoreCase("txt")) {
+                            jpFileRow.setName(String.valueOf(fileId));
+                            jpFileRow.addMouseListener(getMyMouseListener());
+
+                            jpFileRow.add(jlFileName);
+                            jPanelFile.add(jpFileRow);
+                            uir.panelChat.validate();
+                        } else {
+                            jpFileRow.setName(String.valueOf(fileId));
+                            jpFileRow.addMouseListener(getMyMouseListener());
+
+                            jpFileRow.add(jlFileName);
+                            jPanelFile.add(jpFileRow);
+
+                            uir.panelChat.validate();
+                        }
+
+                        myfile.add(new MyFile(fileId, fileName, fileContentByte, getFileExtension(fileName)));
+
+                        fileId++;
                     }
+
                 }
             }
         }
         catch (Exception e){
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
-    public static void sendFile(String path)
-            throws Exception
-    {
-        dataOutputStream = new DataOutputStream(
-                socket.getOutputStream());
-        int bytes = 0;
-        // Open the File where he located in your pc
-        File file = new File(path);
-        FileInputStream fileInputStream
-                = new FileInputStream(file);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + path);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + dataOutputStream);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa : "+ socket);
+    public static String getFileExtension(String fileName) {
+        int i = fileName.lastIndexOf('.');
 
-
-        // Here we send the File to Server
-        dataOutputStream.writeLong(file.length());
-        // Here we  break file into chunks
-        byte[] buffer = new byte[4 * 1024];
-        while ((bytes = fileInputStream.read(buffer))
-                != -1) {
-            // Send the file to Server Socket
-            dataOutputStream.write(buffer, 0, bytes);
-            dataOutputStream.flush();
+        if(i>0) {
+            return fileName.substring(i + 1);
+        }else {
+            return "No extension found";
         }
-        // close the file here
-        fileInputStream.close();
+    }
+    public static MouseListener getMyMouseListener() {
+        return new MouseListener() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // TODO Auto-generated method stub
+                JPanel jPanel = (JPanel) e.getSource();
+                int fileId = Integer.parseInt(jPanel.getName());
+                for (MyFile myFile: myfile) {
+                    if(myFile.getId() == fileId) {
+                        JFrame jfPreview = createFrame(myFile.getName(), myFile.getData(), myFile.getFileExtension());
+                        jfPreview.setVisible(true);
+                    }
+                }
+            }
+        };
+    }
+
+    public static JFrame createFrame(String fileName, byte[] fileData, String fileExtension) {
+        JFrame jFrame = new JFrame("Downloader");
+        jFrame.setSize(400, 400);
+//        jFrame.setBounds(380, 0,800,400);
+
+
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
+        JLabel jlPrompt = new JLabel("Are you sure download " + fileName +"?");
+        jlPrompt.setFont(new Font("Arial", Font.BOLD, 20));
+        jlPrompt.setBounds(100,430 ,400,40);
+
+        JButton jbYes = new JButton("Yes");
+        jbYes.setFont(new Font("Arial", Font.BOLD, 20));
+        jbYes.setBounds(200,500 ,200,40);
+
+        JButton jbNo = new JButton("No");
+//        jbYes.setPreferredSize(new Dimension(100, 50));
+        jbYes.setFont(new Font("Arial", Font.BOLD, 20));
+        jbNo.setBounds(200,500 ,200,40);
+
+        JLabel jlFileContent = new JLabel();
+        jlFileContent.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+        JPanel jpButtons = new JPanel();
+        jpButtons.setBorder(new EmptyBorder(20,0,10,0));
+        jpButtons.add(jbYes);
+        jpButtons.add(jbNo);
+
+        if( fileExtension.equalsIgnoreCase("txt")) {
+            jlFileContent.setText("<html>"+ new String(fileData) + "</html>");
+        } else {
+            jlFileContent.setIcon(new ImageIcon(fileData));
+        }
+
+        jbYes.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File fileToDowload = new File(fileName);
+
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(fileToDowload);
+                    fileOutputStream.write(fileData);
+                    fileOutputStream.close();
+
+                    jFrame.dispose();
+                }catch (IOException error) {
+                    // TODO: handle exception
+                    error.printStackTrace();
+                }
+            }
+        });
+
+        jbNo.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                jFrame.dispose();
+            }
+        });
+
+        jPanel.add(jlPrompt);
+        jPanel.add(jlFileContent);
+        jPanel.add(jpButtons);
+
+        jFrame.add(jPanel);
+
+        return jFrame;
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==jbChooseFile){
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.setDialogTitle("Choose a file to send");
+
+            if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                fileToSend[0] = jFileChooser.getSelectedFile();
+                jlFileName.setText("Send file : " + fileToSend[0].getName());
+            }
+        }
+        else if(e.getSource()==jbSendFile){
+            if(fileToSend[0]==null) {
+                jlFileName.setText("Please choose a file first");
+            } else {
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(fileToSend[0].getAbsolutePath());
+
+
+                    String fileName = fileToSend[0].getName();
+                    byte[] fileNameBytes = fileName.getBytes();
+
+                    byte[] fileContentBytes = new byte[(int)fileToSend[0].length()];
+                    fileInputStream.read(fileContentBytes);
+
+                    dosFile.writeInt(fileNameBytes.length);
+                    dosFile.write(fileNameBytes);
+
+                    dosFile.writeInt(fileContentBytes.length);
+                    dosFile.write(fileContentBytes);
+                } catch (Exception e2) {
+                    // TODO: handle exception
+                    e2.printStackTrace();
+                }
+            }
+        }
     }
 }

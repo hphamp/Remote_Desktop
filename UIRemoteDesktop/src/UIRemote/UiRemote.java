@@ -319,27 +319,12 @@ public class UiRemote implements ActionListener,ItemListener{
             panelChat.setVisible(true);
         }
         else if(e.getSource() == btnConect){
-
-//            if(toggleButton.isSelected()){
-//                if (txtIpConect != null) {
-////                    UIRemote.chat(false);
-//                    password = String.valueOf(txtsetPassword.getPassword());
-//                    new ClientInitiator(password,txtIpConect.getText(), Port);
-//
-//                }
-//            }
-//            else {
-//                UIRemote.chat(true);
-//                new ServerInitiator(txtNameDesktop.getText(),Port);
-//            boolean connect = false;
-//            if(btnConect.getText().equals("CONNECT")){
-//                connect = true;
-//                btnConect.setText("Pause");
-//            }
-//            else{
-//                connect = false;
-//                btnConect.setText("CONNECT");
-//            }
+            if(btnConect.getText()=="CONNECT"){
+                btnConect.setText("CONNECTED");
+            }
+            else{
+                btnConect.setText("CONNECT");
+            }
             if(toggleButton.isSelected()){
                 if (txtIpConect != null) {
                     password = String.valueOf(txtsetPassword.getPassword());
@@ -349,12 +334,8 @@ public class UiRemote implements ActionListener,ItemListener{
             }
             else{
                     new ServerInitiator(txtNameDesktop.getText(),Port);
-                        new Chat(this,true,txtNameDesktop.getText());
-
+                    new Chat(this,true,txtNameDesktop.getText());
             }
-
-
-//            }
         }
         else if (e.getSource() == btnSave) {
             txtPort.setText(txtPort.getText());

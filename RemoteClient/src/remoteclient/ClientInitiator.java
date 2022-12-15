@@ -10,6 +10,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
@@ -47,25 +48,37 @@ public class ClientInitiator  extends Thread{
             //send password
             dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF(password);
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
 
 
+            JFrame frame = new  JFrame ();
+            int result = JOptionPane.showConfirmDialog(frame,
+                    "Are you sure accept remote from " + dis.readUTF(),
+                    "Accept remote",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if(result == JOptionPane.YES_OPTION){
+                dos.writeBoolean(true);
 
-            //Get default screen device
-            GraphicsEnvironment gEnv=GraphicsEnvironment.getLocalGraphicsEnvironment();
-            GraphicsDevice gDev=gEnv.getDefaultScreenDevice();
+                //Get default screen device
+                GraphicsEnvironment gEnv=GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice gDev=gEnv.getDefaultScreenDevice();
 
-            //Get screen dimensions
-            Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-            rectangle = new Rectangle(dim);
+                //Get screen dimensions
+                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                rectangle = new Rectangle(dim);
 
-            //Prepare Robot object
-            robot = new Robot(gDev);
+                //Prepare Robot object
+                robot = new Robot(gDev);
 
-            //draw client gui
-            //ScreenSpyer sends screenshots of the client screen
-            new ScreenSpyer(socket,robot,rectangle);
-            //ServerDelegate recieves server commands and execute them
-            new ServerDelegate(socket,robot);
+                //draw client gui
+                //ScreenSpyer sends screenshots of the client screen
+                new ScreenSpyer(socket,robot,rectangle);
+                //ServerDelegate recieves server commands and execute them
+                new ServerDelegate(socket,robot);
+            }else if (result == JOptionPane.NO_OPTION){
+                dos.writeBoolean(false);
+            }
 
 
         } catch (Exception ex) {

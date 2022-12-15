@@ -4,6 +4,7 @@ import UIRemote.UiRemote;
 
 import java.awt.BorderLayout;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -32,6 +33,8 @@ public class ServerInitiator extends Thread{
             Socket client = sc.accept();
             //Listen to server port and accept clients connections
                     DataInputStream dis = new DataInputStream(client.getInputStream());
+                    DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+
                     String pass = JOptionPane.showInputDialog("Please enter password is provided by Client");
                     String getPassByClient = dis.readUTF();
                     do{
@@ -43,11 +46,17 @@ public class ServerInitiator extends Thread{
                         }
                         else break;
                     }while (true);
-                    drawGUI();
-                    System.out.println("New client Connected to the server");
+                    dos.writeUTF(uir.txtNameDesktop.getText());
+                    if(dis.readBoolean()){
+                        drawGUI();
+                        System.out.println("New client Connected to the server");
 
-                    new ClientHandler(client,desktop);
+                        new ClientHandler(client,desktop);
+                    }
+                    else
+                    client.close();
         } catch (IOException ex) {
+            new UiRemote();
             ex.printStackTrace();
         }
     }

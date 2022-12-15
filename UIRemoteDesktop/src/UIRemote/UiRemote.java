@@ -320,9 +320,11 @@ public class UiRemote implements ActionListener,ItemListener{
         else if(e.getSource() == btnConect){
             if(btnConect.getText()=="CONNECT"){
                 btnConect.setText("CONNECTED");
+                btnConect.setBounds(345, 261, 180, 36);
             }
             else{
                 btnConect.setText("CONNECT");
+                btnConect.setBounds(345, 261, 160, 36);
             }
             if(toggleButton.isSelected()){
 

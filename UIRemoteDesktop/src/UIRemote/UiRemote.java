@@ -4,29 +4,28 @@ import remoteclient.ClientInitiator;
 import remoteserver.ServerInitiator;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 
 
 public class UiRemote implements ActionListener,ItemListener{
 
     JFrame frame1;
     private JPanel panelMain;
-    private JTextField txtIpConect;
-    private JPasswordField txtPass;
+    public JTextField txtIpConect;
+    public JPasswordField txtPass;
     private JTextField txtMyIp;
     private JToggleButton toggleButton;
-    private ItemListener itemListener;
     private JMenuItem mnNewMenu;
     private JMenuItem mnNewMenu_1;
     private JMenuItem mnNewMenu_2;
-    private JButton btnConect;
+    public JButton btnConect;
 
     //setting
-    private JTextField txtPort;
+    public JTextField txtPort;
     public JTextField txtNameDesktop;
     private JLabel lbPort;
 //    private JTextField txtSetPass;
@@ -326,15 +325,15 @@ public class UiRemote implements ActionListener,ItemListener{
                 btnConect.setText("CONNECT");
             }
             if(toggleButton.isSelected()){
+
                 if (txtIpConect != null) {
-                    password = String.valueOf(txtsetPassword.getPassword());
-                    new ClientInitiator(txtNameDesktop.getText(),password,txtIpConect.getText(), Port);
-                        new Chat(this,false,txtNameDesktop.getText());
+                    new ClientInitiator(this);
+                    new Chat(this,false);
                 }
             }
             else{
-                    new ServerInitiator(txtNameDesktop.getText(),Port);
-                    new Chat(this,true,txtNameDesktop.getText());
+                    new ServerInitiator(this);
+                    new Chat(this,true);
             }
         }
         else if (e.getSource() == btnSave) {

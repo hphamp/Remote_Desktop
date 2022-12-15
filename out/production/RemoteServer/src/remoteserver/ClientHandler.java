@@ -1,9 +1,3 @@
-/*
- * Author Ahmed Abdelhalim - 2009
- * Email: englemo@hotmail.com
- * Please do not remove the above lines
- */
-
 package remoteserver;
 
 import java.awt.BorderLayout;
@@ -16,10 +10,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
-/**
- *
- * @author Halim
- */
 class ClientHandler extends Thread {
 
     private JDesktopPane desktop = null;
@@ -33,37 +23,27 @@ class ClientHandler extends Thread {
         this.desktop = desktop;
         start();
     }
-
-    /*
-     * Draw GUI per each connected client
-     */
     public void drawGUI(){
         interFrame.setLayout(new BorderLayout());
         interFrame.getContentPane().add(cPanel,BorderLayout.CENTER);
         interFrame.setSize(100,100);
         desktop.add(interFrame);
         try {
-            //Initially show the internal frame maximized
             interFrame.setMaximum(true);
         } catch (PropertyVetoException ex) {
             ex.printStackTrace();
         }
-        //this allows to handle KeyListener events
         cPanel.setFocusable(true);
         interFrame.setVisible(true);
     }
 
     public void run(){
 
-        //used to represent client screen size
         Rectangle clientScreenDim = null;
-        //Used to read screenshots and client screen dimension
         ObjectInputStream ois = null;
-        //start drawing GUI
         drawGUI();
 
         try{
-            //Read client screen dimension
             ois = new ObjectInputStream(cSocket.getInputStream());
             clientScreenDim =(Rectangle) ois.readObject();
         }catch(IOException ex){
@@ -71,9 +51,7 @@ class ClientHandler extends Thread {
         }catch(ClassNotFoundException ex){
             ex.printStackTrace();
         }
-        //Start recieveing screenshots
         new ClientScreenReciever(ois,cPanel);
-        //Start sending events to the client
         new ClientCommandsSender(cSocket,cPanel,clientScreenDim);
     }
 

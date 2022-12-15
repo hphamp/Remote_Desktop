@@ -1,8 +1,3 @@
-/*
- * Author Ahmed Abdelhalim - 2009
- * Email: englemo@hotmail.com
- * Please do not remove the above lines
- */
 
 package remoteserver;
 
@@ -17,9 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import javax.swing.JPanel;
 
-/**
- * @author Halim
- */
 class ClientCommandsSender implements KeyListener,
         MouseMotionListener,MouseListener {
 
@@ -32,13 +24,10 @@ class ClientCommandsSender implements KeyListener,
         cSocket = s;
         cPanel = p;
         clientScreenDim = r;
-        //Associate event listners to the panel
         cPanel.addKeyListener(this);
         cPanel.addMouseListener(this);
         cPanel.addMouseMotionListener(this);
         try {
-             //Prepare PrintWriter which will be used to send commands to
-             //the client
             writer = new PrintWriter(cSocket.getOutputStream());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -46,7 +35,6 @@ class ClientCommandsSender implements KeyListener,
         
     }
 
-    //Not implemeted yet
     public void mouseDragged(MouseEvent e) {
     }
 
@@ -62,7 +50,6 @@ class ClientCommandsSender implements KeyListener,
         writer.flush();
     }
 
-    //this is not implemented
     public void mouseClicked(MouseEvent e) {
     }
 
@@ -90,16 +77,13 @@ class ClientCommandsSender implements KeyListener,
         writer.flush();
     }
 
-    //not implemented
     public void mouseEntered(MouseEvent e) {
     }
 
-    //not implemented
     public void mouseExited(MouseEvent e) {
 
     }
 
-    //not implemented
     public void keyTyped(KeyEvent e) {
     }
 

@@ -1,9 +1,6 @@
-/*
- * Author Ahmed Abdelhalim - 2009
- * Email: englemo@hotmail.com
- * Please do not remove the above lines
- */
 package remoteserver;
+
+import UIRemote.UiRemote;
 
 import java.awt.BorderLayout;
 import java.io.DataInputStream;
@@ -14,20 +11,16 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/**
- * This is the entry class of the server
- */
 public class ServerInitiator extends Thread{
-    //UIRemote.Main server frame
     public static JFrame frame = new JFrame();
-    //JDesktopPane represents the main container that will contain all
-    //connected clients' screens
     public static JDesktopPane desktop = new JDesktopPane();
     private String NameDesktop;
     private int port;
-    public  ServerInitiator(String NameDesktop, int port){
-        this.NameDesktop=NameDesktop;
-        this.port = port;
+    private UiRemote uir;
+    public  ServerInitiator(UiRemote uir){
+        this.uir = uir;
+        this.NameDesktop = uir.txtNameDesktop.getText();
+        this.port = Integer.parseInt(uir.txtPort.getText());
         this.start();
     }
 
@@ -50,27 +43,17 @@ public class ServerInitiator extends Thread{
                         }
                         else break;
                     }while (true);
-                    //Show Server GUI
                     drawGUI();
                     System.out.println("New client Connected to the server");
-                    //Per each client create a ClientHandler
-                    new ClientHandler(client,desktop);
-//                    ServerSocket sc1 = new ServerSocket(port+1);
-//                    Socket client1 = sc1.accept();
-//                    new Chat(true,NameDesktop,client);
 
+                    new ClientHandler(client,desktop);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-
-    /*
-     * Draws the main server GUI
-     */
     public static void drawGUI(){
             frame.add(desktop,BorderLayout.CENTER);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            //Show the frame in a maximized state
             frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
             frame.setVisible(true);
     }

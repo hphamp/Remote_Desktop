@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import static remoteserver.ServerInitiator.frame;
 
 public class Chat extends Thread implements ActionListener{
-//    private JFrame frame;
-//    private JPanel panelChat;
     public JButton btnSend;
     public JTextArea txtchat;
     public JTextArea textArea_viewchat;
@@ -26,11 +24,10 @@ public class Chat extends Thread implements ActionListener{
     public boolean type;
     public xuly xl;
     public UiRemote uir;
-    public File[] fileToSend = new File[1];
-    public Chat(UiRemote uir,boolean type,String NameDesktop){
+    public Chat(UiRemote uir,boolean type){
         this.uir = uir;
         this.type = type;
-        this.nameDesktop=NameDesktop;
+        this.nameDesktop=uir.txtNameDesktop.getText();
         this.start();
         xl = new xuly(this.uir,type);
         xl.start();
@@ -39,12 +36,59 @@ public class Chat extends Thread implements ActionListener{
 
     public static DataOutputStream dos;
     public static DataInputStream dis;
-    public static DataOutputStream dosFile;
-    public static DataInputStream disFile;
     public static Socket socket = null;
-    public static Socket socketFile = null;
     @Override
     public void run(){
+
+        String ipConect = uir.txtIpConect.getText();
+        int port = Integer.parseInt(uir.txtPort.getText())-1;
+        if(type){
+
+            ServerSocket serverSocket = null;
+
+            try {
+                System.out.println("Binding to port " + port + ", please wait  ...");
+                serverSocket = new ServerSocket(port);
+                System.out.println("Server started: " + serverSocket);
+                System.out.println("Waiting for a client ...");
+
+                    socket = serverSocket.accept();
+                drawUi();
+
+                    System.out.println("Client accepted: " + socket);
+                    dos = new DataOutputStream(socket.getOutputStream());
+                    System.out.println("dos Server : ==== " +dos);
+                    dis = new DataInputStream(socket.getInputStream());
+                    while (true) {
+
+                        String ch = dis.readUTF();
+                        textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
+
+                    }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            try {
+                socket = new Socket(ipConect, port); // Connect to server
+                drawUi();
+                System.out.println("Connected: " + socket);
+                dos = new DataOutputStream(socket.getOutputStream());
+                System.out.println("dos Client : ==== " +dos);
+                dis = new DataInputStream(socket.getInputStream());
+                while (true) {
+                    String ch = dis.readUTF();
+                    textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
+                }
+            } catch (Exception e) {
+                System.out.println("Can't connect to server");
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public void drawUi(){
         btnSend = new JButton("Send");
         btnSend.setBackground(SystemColor.textHighlightText);
         btnSend.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -74,51 +118,6 @@ public class Chat extends Thread implements ActionListener{
 
         uir.frame1.add(uir.panelChat);
         uir.panelChat.setVisible(true);
-
-        if(type){
-
-            ServerSocket serverSocket = null;
-
-            try {
-                System.out.println("Binding to port " + 2000 + ", please wait  ...");
-                serverSocket = new ServerSocket(2000);
-                System.out.println("Server started: " + serverSocket);
-                System.out.println("Waiting for a client ...");
-
-//                try {
-                    socket = serverSocket.accept();
-
-                    System.out.println("Client accepted: " + socket);
-                    dos = new DataOutputStream(socket.getOutputStream());
-                    System.out.println("dos Server : ==== " +dos);
-                    dis = new DataInputStream(socket.getInputStream());
-                    while (true) {
-
-                        String ch = dis.readUTF();
-                        textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
-
-                    }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-        else {
-            try {
-                socket = new Socket("localhost", 2000); // Connect to server
-                System.out.println("Connected: " + socket);
-                dos = new DataOutputStream(socket.getOutputStream());
-                System.out.println("dos Client : ==== " +dos);
-                dis = new DataInputStream(socket.getInputStream());
-                while (true) {
-                    String ch = dis.readUTF();
-                    textArea_viewchat.setText(textArea_viewchat.getText()+"\n" + ch);
-                }
-            } catch (Exception e) {
-                System.out.println("Can't connect to server");
-                throw new RuntimeException(e);
-            }
-        }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -146,9 +145,13 @@ class xuly extends Thread implements ActionListener {
     static JPanel jPanelFile;
     JScrollPane jScrollPane;
     static UiRemote uir;
+    private int port=0;
+    private String ipConnect = "";
     public xuly(UiRemote uir,boolean type)
     {
         this.uir = uir;
+        this.port = Integer.parseInt(uir.txtPort.getText())+1;
+        this.ipConnect = uir.txtIpConect.getText();
         this.type = type;
 
         ///////////////////////////////////////
@@ -181,7 +184,6 @@ class xuly extends Thread implements ActionListener {
 
         uir.panelChat.add(jPanelFile);
         uir.panelChat.add(jScrollPane);
-        //////////////////////////////////////////
     }
     static ArrayList<MyFile> myfile = new ArrayList<>();
     final File[] fileToSend = new File[1];
@@ -193,17 +195,16 @@ class xuly extends Thread implements ActionListener {
         ServerSocket serverSocketFile = null;
         try {
             if(type){
-                serverSocketFile = new ServerSocket(1234);
+                serverSocketFile = new ServerSocket(port);
                 socketFile = serverSocketFile.accept();
                 ReceiveFile();
             }
             else {
-                socketFile = new Socket("localhost", 1234);
+                socketFile = new Socket(ipConnect, port);
                 ReceiveFile();
             }
         }
         catch (Exception e){
-//            throw new RuntimeException();
             e.printStackTrace();
         }
     }
@@ -250,12 +251,9 @@ class xuly extends Thread implements ActionListener {
 
                             uir.panelChat.validate();
                         }
-
                         myfile.add(new MyFile(fileId, fileName, fileContentByte, getFileExtension(fileName)));
-
                         fileId++;
                     }
-
                 }
             }
         }
@@ -317,7 +315,6 @@ class xuly extends Thread implements ActionListener {
     public static JFrame createFrame(String fileName, byte[] fileData, String fileExtension) {
         JFrame jFrame = new JFrame("Downloader");
         jFrame.setSize(400, 400);
-//        jFrame.setBounds(380, 0,800,400);
 
 
         JPanel jPanel = new JPanel();
@@ -331,7 +328,6 @@ class xuly extends Thread implements ActionListener {
         jbYes.setBounds(200,500 ,200,40);
 
         JButton jbNo = new JButton("No");
-//        jbYes.setPreferredSize(new Dimension(100, 50));
         jbYes.setFont(new Font("Arial", Font.BOLD, 20));
         jbNo.setBounds(200,500 ,200,40);
 

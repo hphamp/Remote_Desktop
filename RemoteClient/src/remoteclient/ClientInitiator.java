@@ -1,33 +1,18 @@
 
-/*
- * Author Ahmed Abdelhalim - 2009
- * Email: englemo@hotmail.com
- * Please do not remove the above lines
- */
-
 package remoteclient;
 
-import java.awt.AWTException;
+import UIRemote.UiRemote;
+
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 
-/**
- *
- * This class is responsible for connecting to the server
- * and starting ScreenSpyer and ServerDelegate classes
- */
 public class ClientInitiator  extends Thread{
 
     Socket socket = null;
@@ -35,14 +20,15 @@ public class ClientInitiator  extends Thread{
     private String password;
     private String ip;
     private int port;
+    private UiRemote uir;
 
 
-    public ClientInitiator(String NameDesktop, String password, String ip, int port) {
-
-        this.NameDesktop= NameDesktop;
-        this.password=password;
-        this.ip = ip;
-        this.port = port;
+    public ClientInitiator(UiRemote uir) {
+        this.uir = uir;
+        this.NameDesktop = uir.txtNameDesktop.getText();
+        this.port = Integer.parseInt(uir.txtPort.getText());
+        this.ip = uir.txtIpConect.getText();
+        this.password = String.valueOf(uir.txtPass.getPassword());
         this.start();
     }
     @Override
@@ -55,7 +41,6 @@ public class ClientInitiator  extends Thread{
 
             System.out.println("Connecting to server ..........");
             socket = new Socket(ip, port);
-
             System.out.println("Connection Established.");
 
 

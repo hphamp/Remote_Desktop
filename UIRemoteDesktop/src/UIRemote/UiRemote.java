@@ -286,8 +286,8 @@ public class UiRemote implements ActionListener,ItemListener{
         lblNewLabel_4_2.setBounds(345, 166, 116, 13);
         panelMain.add(lblNewLabel_4_2);
 
-        toggleButton = new JToggleButton("Off");
-        toggleButton.setBounds(570, 125, 60, 30);
+        toggleButton = new JToggleButton("Server");
+        toggleButton.setBounds(520, 30, 90, 30);
         toggleButton.addItemListener(this);
         panelMain.add(toggleButton);
 
@@ -353,10 +353,10 @@ public class UiRemote implements ActionListener,ItemListener{
         if(e.getSource() == toggleButton){
             int state = e.getStateChange();
             if (state == ItemEvent.SELECTED) {
-                toggleButton.setText("On");
+                toggleButton.setText("Client");
                 txtIpConect.setEditable(true);
             } else {
-                toggleButton.setText("Off");
+                toggleButton.setText("Server");
                 txtIpConect.setEditable(false);
             }
         }

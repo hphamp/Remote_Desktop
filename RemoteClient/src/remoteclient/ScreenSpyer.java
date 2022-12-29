@@ -55,7 +55,7 @@ class ScreenSpyer extends Thread {
 
             //wait for 100ms to reduce network traffic
             try{
-                Thread.sleep(100);
+                Thread.sleep(250);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
